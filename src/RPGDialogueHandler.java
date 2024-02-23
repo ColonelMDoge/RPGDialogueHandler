@@ -6,7 +6,7 @@ import javax.swing.Timer;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 public class RPGDialogueHandler implements KeyListener {
-    RPGDialogueHandler(JPanel dp, JLabel left, JLabel right, JTextArea dialogue) {
+    public RPGDialogueHandler(JPanel dp, JLabel left, JLabel right, JTextArea dialogue) {
         this.dialoguePanel = dp;
         this.leftBox = left;
         this.rightBox = right;
