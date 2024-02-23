@@ -1,3 +1,5 @@
+package dialoguehandler;
+
 import java.awt.event.*;
 import java.io.*;
 import javax.sound.sampled.*;
@@ -25,7 +27,7 @@ public class RPGDialogueHandler implements KeyListener {
     private String directory;
     private char[] sentence;
     private short pointer = 0;
-
+    private int dialogueKey;
     private final Timer timer = new Timer(80, e -> {
         dialogueBox.setText(dialogueBox.getText() + sentence[pointer]);
         if (pointer == sentence.length - 1) {
@@ -39,6 +41,10 @@ public class RPGDialogueHandler implements KeyListener {
 
     public void setResourcePath(String directory) {
         this.directory = directory + "/";
+    }
+
+    public void setDialogueKey(char key) {
+        dialogueKey = Character.toUpperCase(key);
     }
 
     public void loadDialogue(String pathToResource) {
@@ -148,7 +154,7 @@ public class RPGDialogueHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() != KeyEvent.VK_Z) return;
+        if (e.getKeyCode() != dialogueKey) return;
         if (timer.isRunning()) {
             stopTimer();
             dialogueBox.setText(fullSentence);
