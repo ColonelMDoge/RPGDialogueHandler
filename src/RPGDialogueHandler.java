@@ -1,5 +1,3 @@
-package dialoguehandler;
-
 import java.awt.event.*;
 import java.io.*;
 import javax.sound.sampled.*;
