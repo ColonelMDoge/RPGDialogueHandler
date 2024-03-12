@@ -52,6 +52,7 @@ class DialoguePanel extends JPanel {
         rpgdh = new RPGDialogueHandler(this, leftCharacter, rightCharacter, dialogue);
         rpgdh.setResourcePath("src/resources");
         rpgdh.setDialogueKey('Z');
+        rpgdh.setDialogueScrollSound("Scroll.wav");
         rpgdh.loadDialogue("SampleDialogue.txt");
         rpgdh.runDialogue();
     }
@@ -96,6 +97,13 @@ The setResourcePath() method allows you to specify the package or folder path th
 ```java
 public void setResourcePath(String directory) {
     this.directory = directory + "/";
+}
+```
+### setDialogueScrollSound()
+The setDialogueScrollSound() method allows you to choose an SFX that plays when the user scrolls to the next character's dialogue.
+```java
+public void setDialogueScrollSound(String soundFile) {
+    scrollFile = new File(directory + "sounds/" + soundFile);
 }
 ```
 ###  setDialogueKey()
