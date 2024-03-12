@@ -13,6 +13,7 @@ public class RPGDialogueHandler implements KeyListener {
         this.dialogueBox = dialogue;
         dialogue.addKeyListener(this);
     }
+
     private final Queue<String> dialogue = new LinkedList<>();
     private final List<List<String>> characterInformationList = new ArrayList<>();
     private final JPanel dialoguePanel;
@@ -20,12 +21,11 @@ public class RPGDialogueHandler implements KeyListener {
     private List<String> charInfo;
     private CountDownLatch cdl;
     private JTextArea dialogueBox;
-    private File voiceFile;
-    private String fullSentence;
-    private String directory;
+    private File voiceFile, scrollFile;
+    private String fullSentence, directory;
     private char[] sentence;
     private short pointer = 0;
-    private int dialogueKey;
+
     private final Timer timer = new Timer(80, e -> {
         dialogueBox.setText(dialogueBox.getText() + sentence[pointer]);
         if (pointer == sentence.length - 1) {
@@ -37,13 +37,9 @@ public class RPGDialogueHandler implements KeyListener {
         }
     });
 
-    public void setResourcePath(String directory) {
-        this.directory = directory + "/";
-    }
+    public void setDialogueScrollSound(String soundFile) { scrollFile = new File(directory + "sounds/" + soundFile);}
 
-    public void setDialogueKey(char key) {
-        dialogueKey = Character.toUpperCase(key);
-    }
+    public void setResourcePath(String directory) {this.directory = directory + "/"; }
 
     public void loadDialogue(String pathToResource) {
         try (BufferedReader br = new BufferedReader(new FileReader(directory + "dialogue/" + pathToResource))) {
@@ -64,10 +60,13 @@ public class RPGDialogueHandler implements KeyListener {
         SwingWorker<Void, Void> sw = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
+                boolean isFirstIteration = false;
                 for (List<String> information : characterInformationList) {
                     charInfo = information;
                     dialogue.addAll(information.subList(6, information.size()));
                     cdl = new CountDownLatch(dialogue.size());
+                    if (isFirstIteration) playSound(scrollFile);
+                    isFirstIteration = true;
                     sayDialogue(charInfo.get(0), charInfo.get(1), charInfo.get(2), charInfo.get(3), charInfo.get(4), charInfo.get(5), dialogue.poll());
                     cdl.await();
                 }
@@ -123,17 +122,21 @@ public class RPGDialogueHandler implements KeyListener {
         timer.restart();
     }
 
+    private void playSound(File soundFile) {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+            Clip soundEffects = AudioSystem.getClip();
+            soundEffects.open(ais);
+            ((FloatControl) soundEffects.getControl(FloatControl.Type.MASTER_GAIN)).setValue(-5);
+            soundEffects.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.out.println("Could not load audio file!");
+        }
+    }
+
     private void checkForDelays() {
         if (!(sentence[pointer] == ' ')) {
-            try {
-                AudioInputStream ais = AudioSystem.getAudioInputStream(voiceFile);
-                Clip soundEffects = AudioSystem.getClip();
-                soundEffects.open(ais);
-                ((FloatControl) soundEffects.getControl(FloatControl.Type.MASTER_GAIN)).setValue(-5);
-                soundEffects.start();
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                System.out.println("Could not load audio file!");
-            }
+            playSound(voiceFile);
         }
         if (sentence[pointer] == '.' || sentence[pointer] == '!' || sentence[pointer] == '?') {
             timer.setDelay(750);
@@ -152,7 +155,7 @@ public class RPGDialogueHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() != dialogueKey) return;
+        if (e.getKeyCode() != KeyEvent.VK_Z) return;
         if (timer.isRunning()) {
             stopTimer();
             dialogueBox.setText(fullSentence);
@@ -165,12 +168,8 @@ public class RPGDialogueHandler implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    public void keyReleased(KeyEvent e) {}
 }
