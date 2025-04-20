@@ -65,7 +65,8 @@ public class DialoguePanel extends JPanel {
         g.drawImage(backgroundImage, x, y, scaledWidth, scaledHeight, this);
     }
 
-    public void run() {
+    // Sample resource settings
+    public void run() 
         rpgdh = new RPGDialogueHandler(this, leftCharacter, rightCharacter, dialogue);
         rpgdh.setResourcePath("src/resources");
         rpgdh.setDialogueKey('Z');
