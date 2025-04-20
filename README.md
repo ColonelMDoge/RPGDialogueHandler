@@ -1,54 +1,11 @@
 # RPGDialogueHandler
 > ### This free-to-use class allows you to implement dialogue scrolling capabilities into your Java project
 ## How to use it:
-The RPGDialogueHandler class requires a JPanel, and must include two JLabels to represent the character sprite boxes, and one JTextArea to represent the dialogue.
+The RPGDialogueHandler class is standalone, but you can change the values in the DialoguePanel class to set resource paths!
 ## Example
-An example implementation for setting the handler up would be as shown:
+An example implementation for setting the DialoguePanel would be as shown:
 ```java
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import java.awt.*;
-class DialoguePanel extends JPanel {
-    JPanel characterPanel;
-    JLabel leftCharacter, rightCharacter;
-    JTextArea dialogue;
-    
-    RPGDialogueHandler rpgdh;
-    
-    public DialoguePanel() {
-        this.setBackground(Color.WHITE);
-        this.setLayout(new BorderLayout());
-
-        characterPanel = new JPanel(new BorderLayout(250,10));
-        characterPanel.setBackground(Color.WHITE);
-
-        leftCharacter = new JLabel();
-        leftCharacter.setBorder(BorderFactory.createLineBorder(Color.BLACK,5,true));
-        characterPanel.add(leftCharacter, BorderLayout.WEST);
-
-        rightCharacter = new JLabel();
-        rightCharacter.setBorder(BorderFactory.createLineBorder(Color.BLACK,5,true));
-        characterPanel.add(rightCharacter, BorderLayout.EAST);
-
-        dialogue = new JTextArea(3,0);
-        dialogue.setFont(new Font("Comic Sans MS", Font.BOLD, 30));
-        dialogue.setFocusable(true);
-        dialogue.setLineWrap(true);
-        dialogue.setWrapStyleWord(true);
-        dialogue.setHighlighter(null);
-        dialogue.setEditable(false);
-        dialogue.setCaretColor(this.getBackground());
-        dialogue.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.BLACK, 5), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-        characterPanel.add(dialogue,BorderLayout.SOUTH);
-        this.add(characterPanel,BorderLayout.SOUTH);
-
-    }
-    public Insets getInsets() {
-        return new Insets(40,50,25,50);
-    }
-    
-    public void run() {
+public void run() {
         rpgdh = new RPGDialogueHandler(this, leftCharacter, rightCharacter, dialogue);
         rpgdh.setResourcePath("src/resources");
         rpgdh.setDialogueKey('Z');
@@ -56,19 +13,19 @@ class DialoguePanel extends JPanel {
         rpgdh.loadDialogue("SampleDialogue.txt");
         rpgdh.runDialogue();
     }
-    
-}
 ```
-Another way of implementing this would be directly intializing the class in the JPanel's end of its constructor and run its methods.
 ## How to use custom resources
 First, in order to use custom resources, the hierarchy for the folder that contains everything should be:
 1. resources
+   - backgrounds
    - characters
      - character1
      - character2
        - image1
    - dialogue
    - sounds
+
+The backgrounds should be in the "backgrounds" package. (.png files only!)
 
 Each character should be a subpackage inside the "characters" package, and the character's images should be in its respective folder. (.png files only!)
 
@@ -78,9 +35,9 @@ Character's sound effects should be inside the "sounds" package. (.wav files onl
 ## How to setup text file
 For the RPGDialogueHandler to properly load character sprites and text into the program, you must create a valid text file. Below is a template with all explanations:
 ```
-Name|Sound|Facial|Position|enableLeft|enableRight|Dialogue
-Name|Sound|Facial|Position|enableLeft|enableRight|Dialogue
-Name|Sound|Facial|Position|enableLeft|enableRight|Dialogue
+Name|Sound|Facial|Position|enableLeft|enableRight|Background|Dialogue
+Name|Sound|Facial|Position|enableLeft|enableRight|Background|Dialogue
+Name|Sound|Facial|Position|enableLeft|enableRight|Background|Dialogue
 ```
 1. Name: The character's name
 2. Sound: The name of the sound file used without the extension
@@ -88,7 +45,8 @@ Name|Sound|Facial|Position|enableLeft|enableRight|Dialogue
 4. Position (Either left or right): Decides if the image will be placed on the left or the right JPanel box
 5. enableLeft (Either true or false): Enables or disables left JPanel box
 6. enableRight (Either true or false): Enables or disables right JPanel box
-7. Dialogue: The line of dialogue that the character will say. Any consecutive text after the dialogue separated with the "|" delimiter will be counted as the next part of the dialogue after scrolling.
+7. Background (Either name of the image file or none to ignore): Paints a background image to represent the atmosphere.
+8. Dialogue: The line of dialogue that the character will say. Any consecutive text after the dialogue separated with the "|" delimiter will be counted as the next part of the dialogue after scrolling.
 
 NOTE: The data before the dialogue MUST BE CASE SENSITIVE, as file names and such are determined by this data!
 ## How to use methods
